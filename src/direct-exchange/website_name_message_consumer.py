@@ -42,11 +42,14 @@ class RabbitMQWebsiteNameMessageConsumer:
 
     def consume(self):
         channel = self.rabbit_connection.channel()
+
+        # Basic QOS property decides the round robin behaviours.
+        # Please check the Pika Libraries Channel API documentation for more
+        # information about the behaviour.
         channel.basic_qos(prefetch_count=1)
         channel.basic_consume(self.process_message,
                               queue=WEBSITE_STATUS_CHECK_QUEUE_NAME)
         channel.start_consuming()
-
 
     def process_message(self, channel, method, properties, website_name):
         print 'Received website name to check the status:', website_name
